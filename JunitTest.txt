@@ -1,0 +1,108 @@
+package com.tricon.demo_project;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.HttpClientErrorException;
+
+import com.tricon.demo_project.DemoProjectApplication;
+import com.tricon.demo_project.entity.Article;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = DemoProjectApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class DemoProjectApplicationTests {
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
+    @LocalServerPort
+    private int port;
+
+    private String getRootUrl() {
+        return "http://localhost:" + port;
+    }
+
+    @Test
+    public void contextLoads() {
+
+    }
+
+    @Test
+    public void testGetAllArtcles() {
+         HttpHeaders headers = new HttpHeaders();
+         HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+
+         ResponseEntity<String> response = restTemplate.exchange(getRootUrl() + "/article",
+         HttpMethod.GET, entity, String.class);
+  
+         assertNotNull(response.getBody());
+    }
+
+    @Test
+    public void testGetArticleById() {
+        Article article = restTemplate.getForObject(getRootUrl() + "/article/1", Article.class);
+        System.out.println(article.getTitle());
+        assertNotNull(article);
+    }
+
+    @Test
+    public void testCreateArticle() {
+        Article article = new Article();
+        article.setTitle("name");
+        article.setCategory("var");
+
+        ResponseEntity<Article> postResponse = restTemplate.postForEntity(getRootUrl() + "/article", article, Article.class);
+        assertNotNull(postResponse);
+        assertNotNull(postResponse.getBody());
+    }
+
+    @Test
+    public void testUpdatePost() {
+         int id = 1;
+         Article article = restTemplate.getForObject(getRootUrl() + "/article/" + id, Article.class);
+         article.setTitle("admin1");
+         
+
+         restTemplate.put(getRootUrl() + "/article/" + id, article);
+
+         Article updatedArticle= restTemplate.getForObject(getRootUrl() + "/article/" + id, Article.class);
+         assertNotNull(updatedArticle);
+    }
+
+    @Test
+    public void testDeletePost() {
+         int id = 2;
+         Article article = restTemplate.getForObject(getRootUrl() + "/article/" + id, Article.class);
+         assertNotNull(article);
+
+         restTemplate.delete(getRootUrl() + "/article/" + id);
+    
+         try {
+              article = restTemplate.getForObject(getRootUrl() + "/article/" + id, Article.class);
+         } catch (final HttpClientErrorException e) {
+         assertEquals(e.getStatusCode(), HttpStatus.NOT_FOUND);
+     }
+  }
+
+}
+
+
+# RUB2BUTDAOM Outgoing
+b2bFileTypes.SIGNANR_FETCH_RUB2BUTDAOM=DP_PRANNUL
+b2bFileTypes.SENDANR_FETCH_RUB2BUTDAOM=DP_PRANNUL
+
+# RUB2BUTDACROM Outgoing
+b2bFileTypes.SIGNANR_FETCH_RUB2BUTDACROM=DP_PRANNUL
+b2bFileTypes.SENDANR_FETCH_RUB2BUTDACROM=DP_PRANNUL
